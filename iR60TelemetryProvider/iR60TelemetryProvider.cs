@@ -6,6 +6,7 @@ using SimFeedback.log;
 using System;
 using System.Diagnostics;
 using System.Threading;
+using iRSDKSharp;
 
 namespace SimFeedback.telemetry.iR60
 {
@@ -14,7 +15,6 @@ namespace SimFeedback.telemetry.iR60
     /// </summary>
     public sealed class iR60TelemetryProvider : AbstractTelemetryProvider
     {
-        private const string sharedMemoryFile = @"Local\IRSDKMemMapFileName"; // the name of the shared memory file
         private bool isStopped = true;                                  // flag to control the polling thread
         private Thread t;                                               // the polling thread, reads telemetry data and sends TelemetryUpdated events
 
@@ -27,9 +27,9 @@ namespace SimFeedback.telemetry.iR60
         {
             Author = "JamesClonk";
             Version = "v0.1";
-            BannerImage = @"img\banner_ir60.png"; // Image shown on top of the profiles tab
-            IconImage = @"img\ir60.jpg";          // Icon used in the tree view for the profile
-            TelemetryUpdateFrequency = 100;     // the update frequency in samples per second
+            BannerImage = @"img\banner_iracing.png"; // Image shown on top of the profiles tab
+            IconImage = @"img\iracing.jpg";          // Icon used in the tree view for the profile
+            TelemetryUpdateFrequency = 60;     // the update frequency in samples per second
         }
 
         /// <summary>
@@ -50,7 +50,30 @@ namespace SimFeedback.telemetry.iR60
         /// <returns>List of all telemetry names</returns>
         public override string[] GetValueList()
         {
-            return null; // TODO: return correct list of telemetry names
+            string[] values = {
+                "Brake", "Clutch",
+                "DriverMarker", "EngineWarnings",
+                "FuelLevel", "FuelLevelPct", "FuelPress",
+                "Gear", "HandbrakeRaw",
+                "IsOnTrack",
+                "LatAccel", "LFshockDefl", "LongAccel", "LRshockDefl",
+                "ManifoldPress",
+                "OilLevel", "OilPress", "OilTemp",
+                "OnPitRoad",
+                "Pitch", "PitchRate",
+                "RFshockDefl", "Roll", "RollRate", "RPM", "RRshockDefl",
+                "Rumble",
+                "ShiftGrindRPM", "ShiftIndicatorPct", "ShiftPowerPct",
+                "SlipAngle",
+                "Speed",
+                "SteeringWheelAngle", "SteeringWheelPctTorque", "SteeringWheelTorque",
+                "Throttle",
+                "VelocityX", "VelocityY", "VelocityZ",
+                "VertAccel",
+                "Voltage",  "WaterLevel", "WaterTemp",
+                "Yaw", "YawRate",
+            };
+            return values;
         }
 
         /// <summary>
@@ -83,7 +106,8 @@ namespace SimFeedback.telemetry.iR60
         /// </summary>
         private void Run()
         {
-            iRSDK lastTelemetryData = new iRSDK();
+            iRacingSDK sdk = new iRacingSDK();
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -91,30 +115,32 @@ namespace SimFeedback.telemetry.iR60
             {
                 try
                 {
-                    // get data from game, 
-                    // if an exception will be thrown, we could not retrieve the data because the game 
-                    // is not running or something went wrong
-                    iRSDK telemetryData = (iRSDK)readSharedMemory(typeof(iRSDK), sharedMemoryFile);
-                    // otherwise we are connected
                     IsConnected = true;
 
-                    if (telemetryData.PacketId != lastTelemetryData.PacketId)
+                    // check if the SDK is connected
+                    if (sdk.IsConnected())
                     {
+                        IsConnected = true;
                         IsRunning = true;
-
                         sw.Restart();
 
-                        TelemetryEventArgs args = new TelemetryEventArgs(
-                            new iR60TelemetryInfo(telemetryData, lastTelemetryData));
+                        TelemetryEventArgs args = new TelemetryEventArgs(new iR60TelemetryInfo(sdk));
                         RaiseEvent(OnTelemetryUpdate, args);
-
-                        lastTelemetryData = telemetryData;
+                    }
+                    else if (sdk.IsInitialized)
+                    {
+                        sdk.Shutdown();
+                        IsRunning = false;
+                        IsConnected = false;
                     }
                     else if (sw.ElapsedMilliseconds > 500)
                     {
                         IsRunning = false;
                     }
-
+                    else
+                    {
+                        sdk.Startup();
+                    }
                     Thread.Sleep(SamplePeriod);
                 }
                 catch (Exception e)

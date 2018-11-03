@@ -8,9 +8,7 @@ namespace SimFeedback.telemetry.iR60
 {
     public sealed class iR60TelemetryValue : AbstractTelemetryValue
     {
-
-        public iR60TelemetryValue(string name, object value)
-            : base()
+        public iR60TelemetryValue(string name, object value) : base()
         {
             Name = name;
             Value = value;
