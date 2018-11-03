@@ -77,7 +77,7 @@ namespace SimFeedback.telemetry.iR60
                     // Porsche GT3 Cup
                     // Fahrzeug Länge: 4.564
                     // Radstand: 1.980 x 2.456
-                    float t1 = VelocityY - YawRate * (1.980f / 2);  // Breite 
+                    float t1 = VelocityY - YawRate * (1.980f / 2); // Breite 
                     float t2 = VelocityX - YawRate * (2.456f / 2); // Länge 
                     v = (float)(Math.Atan(t1 / t2) * (180.0 / Math.PI));
                 }
