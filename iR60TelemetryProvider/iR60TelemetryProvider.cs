@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SimFeedback.log;
+﻿using SimFeedback.log;
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -107,7 +103,7 @@ namespace SimFeedback.telemetry.iR60
         private void Run()
         {
             iRacingSDK sdk = new iRacingSDK();
-
+            Session session = new Session();
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
@@ -124,7 +120,7 @@ namespace SimFeedback.telemetry.iR60
                         IsRunning = true;
                         sw.Restart();
 
-                        TelemetryEventArgs args = new TelemetryEventArgs(new iR60TelemetryInfo(sdk));
+                        TelemetryEventArgs args = new TelemetryEventArgs(new iR60TelemetryInfo(sdk, session));
                         RaiseEvent(OnTelemetryUpdate, args);
                     }
                     else if (sdk.IsInitialized)

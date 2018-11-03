@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Reflection;
 using iRSDKSharp;
 
 namespace SimFeedback.telemetry.iR60
@@ -14,16 +10,13 @@ namespace SimFeedback.telemetry.iR60
     /// </summary>
     public sealed class iR60TelemetryInfo : EventArgs, TelemetryInfo
     {
-        private readonly iRacingSDK _telemetryData;
+        private readonly iRacingSDK _sdk;
+        private readonly Session _session;
 
-        private float _lastLFshockDefl;
-        private float _lastLRshockDefl;
-        private float _lastRFshockDefl;
-        private float _lastRRshockDefl;
-
-        public iR60TelemetryInfo(iRacingSDK sdk)
+        public iR60TelemetryInfo(iRacingSDK sdk, Session session)
         {
-            _telemetryData = sdk;
+            _sdk = sdk;
+            _session = session;
         }
 
         public TelemetryValue TelemetryValueByName(string name)
@@ -49,9 +42,9 @@ namespace SimFeedback.telemetry.iR60
                         name = name.Substring(0, squareBracketPos);
                     }
 
-                    if (_telemetryData.VarHeaders.ContainsKey(name))
+                    if (_sdk.VarHeaders.ContainsKey(name))
                     {
-                        data = _telemetryData.GetData(name);
+                        data = _sdk.GetData(name);
                     }
                     else
                     {
@@ -74,13 +67,13 @@ namespace SimFeedback.telemetry.iR60
             get
             {
                 float v = 0.0f;
-                float speed = (float)_telemetryData.GetData("Speed");
+                float speed = (float)_sdk.GetData("Speed");
 
                 if (speed > 5)
                 {
-                    float VelocityX = (float)_telemetryData.GetData("VelocityX");
-                    float VelocityY = (float)_telemetryData.GetData("VelocityY");
-                    float YawRate = (float)_telemetryData.GetData("YawRate");
+                    float VelocityX = (float)_sdk.GetData("VelocityX");
+                    float VelocityY = (float)_sdk.GetData("VelocityY");
+                    float YawRate = (float)_sdk.GetData("YawRate");
                     // Porsche GT3 Cup
                     // Fahrzeug Länge: 4.564
                     // Radstand: 1.980 x 2.456
@@ -96,24 +89,24 @@ namespace SimFeedback.telemetry.iR60
         {
             get
             {
-                float _LFshockDefl = (float)_telemetryData.GetData("LFshockDefl");
-                float _LRshockDefl = (float)_telemetryData.GetData("LRshockDefl");
-                float _RFshockDefl = (float)_telemetryData.GetData("RFshockDefl");
-                float _RRshockDefl = (float)_telemetryData.GetData("RRshockDefl");
+                float _LFshockDefl = (float)_sdk.GetData("LFshockDefl");
+                float _LRshockDefl = (float)_sdk.GetData("LRshockDefl");
+                float _RFshockDefl = (float)_sdk.GetData("RFshockDefl");
+                float _RRshockDefl = (float)_sdk.GetData("RRshockDefl");
 
                 const float x = 1000.0f;
                 float[] data =
                     {
-                    _LFshockDefl - _lastLFshockDefl,
-                    _LRshockDefl - _lastLRshockDefl,
-                    _RFshockDefl - _lastRFshockDefl,
-                    _RRshockDefl - _lastRRshockDefl
+                    _LFshockDefl - (float)_session.Get("LFshockDefl", 0.0f),
+                    _LRshockDefl - (float)_session.Get("LRshockDefl", 0.0f),
+                    _RFshockDefl - (float)_session.Get("RFshockDefl", 0.0f),
+                    _RRshockDefl - (float)_session.Get("RRshockDefl", 0.0f)
                 };
 
-                _lastLFshockDefl = _LFshockDefl;
-                _lastLRshockDefl = _LRshockDefl;
-                _lastRFshockDefl = _RFshockDefl;
-                _lastRRshockDefl = _RRshockDefl;
+                _session.Set("LFshockDefl", _LFshockDefl);
+                _session.Set("LRshockDefl", _LRshockDefl);
+                _session.Set("RFshockDefl", _RFshockDefl);
+                _session.Set("RRshockDefl", _RRshockDefl);
 
                 return data.Max() * x;
             }
