@@ -32,16 +32,11 @@ namespace SimFeedback.telemetry.iR60
                 case "Rumble":
                     data = Rumble;
                     break;
+                case "RumbleHz":
+                    data = RumbleHz;
+                    break;
 
                 default:
-                    int arrayIndexPos = -1;
-                    int squareBracketPos = name.IndexOf('[');
-                    if (squareBracketPos != -1)
-                    {
-                        int.TryParse(name.Substring(squareBracketPos + 1, 1), out arrayIndexPos);
-                        name = name.Substring(0, squareBracketPos);
-                    }
-
                     if (_sdk.VarHeaders.ContainsKey(name))
                     {
                         data = _sdk.GetData(name);
@@ -109,6 +104,22 @@ namespace SimFeedback.telemetry.iR60
                 _session.Set("RRshockDefl", _RRshockDefl);
 
                 return data.Max() * x;
+            }
+        }
+
+        private float RumbleHz
+        {
+            get
+            {
+                float[] data =
+                    {
+                    (float)_sdk.GetData("TireLF_RumblePitch"),
+                    (float)_sdk.GetData("TireRF_RumblePitch"),
+                    (float)_sdk.GetData("TireLR_RumblePitch"),
+                    (float)_sdk.GetData("TireRR_RumblePitch")
+                };
+
+                return data.Max();
             }
         }
     }
