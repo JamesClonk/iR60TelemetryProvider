@@ -139,7 +139,6 @@ namespace SimFeedback.telemetry.iR60
                     {
                         sdk.Startup();
 
-                        IsConnected = false;
                         IsRunning = false;
                     }
                     Thread.Sleep(SamplePeriod);
