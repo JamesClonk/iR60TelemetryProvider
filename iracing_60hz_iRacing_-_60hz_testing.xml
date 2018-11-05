@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Profile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Active="false" Name="iRacing - 60hz testing" TelemetryProvider="iracing_60hz" OverallSmoothnessEnabled="false" OverallSmoothness="0.3" overallIntensity="1" acceleration="60" minSpeed="64704" maxSpeed="65304">
   <author>JamesClonk</author>
-  <version>v1.0-rc.2</version>
+  <version>v1.0-rc.3</version>
   <info>Test profile for iRacing 60hz telemetry.
 Right click on the profile name (left) and copy.
 Activate your copy and get started!
