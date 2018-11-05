@@ -22,7 +22,7 @@ namespace SimFeedback.telemetry.iR60
         public iR60TelemetryProvider() : base()
         {
             Author = "JamesClonk";
-            Version = "v1.0";
+            Version = "v1.0-rc.2";
             BannerImage = @"img\banner_iracing.png"; // Image shown on top of the profiles tab
             IconImage = @"img\iracing.jpg";          // Icon used in the tree view for the profile
             TelemetryUpdateFrequency = 60;     // the update frequency in samples per second
@@ -32,7 +32,7 @@ namespace SimFeedback.telemetry.iR60
         /// Name of this TelemetryProvider.
         /// Used for dynamic loading and linking to the profile configuration.
         /// </summary>
-        public override string Name { get { return "iracing 60hz"; } }
+        public override string Name { get { return "iracing_60hz"; } }
 
         public override void Init(ILogger logger)
         {
