@@ -12,6 +12,7 @@ namespace SimFeedback.telemetry.iR60
     {
         private readonly iRacingSDK _sdk;
         private readonly Session _session;
+        private const float G = 9.81f; 
 
         public iR60TelemetryInfo(iRacingSDK sdk, Session session)
         {
@@ -34,6 +35,9 @@ namespace SimFeedback.telemetry.iR60
                     break;
                 case "RumbleHz":
                     data = RumbleHz;
+                    break;
+                case "VertAccel":
+                    data = VertAccel;
                     break;
 
                 default:
@@ -120,6 +124,17 @@ namespace SimFeedback.telemetry.iR60
                 };
 
                 return data.Max();
+            }
+        }
+
+        private float VertAccel
+        {
+            get
+            {
+                return (float)(
+                    (float)_sdk.GetData("VertAccel") 
+                    * Math.Cos((float)_sdk.GetData("Pitch")) 
+                    * Math.Cos((float)_sdk.GetData("Roll")) - G) / G;
             }
         }
     }
