@@ -22,7 +22,7 @@ namespace SimFeedback.telemetry.iR60
         public iR60TelemetryProvider() : base()
         {
             Author = "JamesClonk";
-            Version = "v1.0-rc.4";
+            Version = "v1.0-rc.5";
             BannerImage = @"img\banner_iracing.png"; // Image shown on top of the profiles tab
             IconImage = @"img\iracing.jpg";          // Icon used in the tree view for the profile
             TelemetryUpdateFrequency = 60;     // the update frequency in samples per second
@@ -54,7 +54,8 @@ namespace SimFeedback.telemetry.iR60
                 "LatAccel", "LFshockDefl", "LFshockVel", "LongAccel", "LRshockDefl", "LRshockVel",
                 "ManifoldPress", "OilLevel", "OilPress", "OilTemp", "OnPitRoad",
                 "Pitch", "PitchRate",
-                "RFshockDefl", "RFshockVel", "Roll", "RollRate", "RPM", "RRshockDefl", "RRshockVel",
+                "RFshockDefl", "RFshockVel", "RRshockDefl", "RRshockVel",
+                "Roll", "RollRate", "RPM",
                 "Rumble", "RumbleHz",
                 "ShiftGrindRPM", "ShiftIndicatorPct", "ShiftPowerPct",
                 "SlipAngle", "Speed",

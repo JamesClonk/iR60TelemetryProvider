@@ -36,8 +36,32 @@ namespace SimFeedback.telemetry.iR60
                 case "RumbleHz":
                     data = RumbleHz;
                     break;
+
                 case "VertAccel":
                     data = VertAccel;
+                    break;
+                case "LongAccel":
+                    data = LongAccel;
+                    break;
+                // TODO: calculate LatAccel
+
+                case "Pitch":
+                    data = RadianToDegree("Pitch") * -1; // invert Pitch
+                    break;
+                case "Roll":
+                    data = RadianToDegree("Roll");
+                    break;
+                case "Yaw":
+                    data = RadianToDegree("Yaw");
+                    break;
+                case "PitchRate":
+                    data = RadianToDegree("PitchRate");
+                    break;
+                case "RollRate":
+                    data = RadianToDegree("RollRate");
+                    break;
+                case "YawRate":
+                    data = RadianToDegree("YawRate");
                     break;
 
                 default:
@@ -59,6 +83,11 @@ namespace SimFeedback.telemetry.iR60
                 throw new UnknownTelemetryValueException(name);
             }
             return tv;
+        }
+
+        private float RadianToDegree(string name)
+        {
+            return (float)_sdk.GetData(name) * (float)(180 / Math.PI);
         }
 
         private float SlipAngle
@@ -137,5 +166,17 @@ namespace SimFeedback.telemetry.iR60
                     * Math.Cos((float)_sdk.GetData("Roll")) - G) / G;
             }
         }
+
+        private float LongAccel
+        {
+            get
+            {
+                return (float)(
+                    (float)_sdk.GetData("LongAccel")
+                    * (Math.Cos((float)_sdk.GetData("Pitch")) / G));
+            }
+        }
+
+        // TODO: calculate LatAccel
     }
 }
