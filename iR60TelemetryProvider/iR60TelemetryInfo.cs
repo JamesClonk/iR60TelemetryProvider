@@ -43,7 +43,9 @@ namespace SimFeedback.telemetry.iR60
                 case "LongAccel":
                     data = LongAccel;
                     break;
-                // TODO: calculate LatAccel
+                case "LatAccel":
+                    data = LatAccel;
+                    break;
 
                 case "Pitch":
                     data = RadianToDegree("Pitch") * -1; // invert Pitch
@@ -177,6 +179,14 @@ namespace SimFeedback.telemetry.iR60
             }
         }
 
-        // TODO: calculate LatAccel
+        private float LatAccel
+        {
+            get
+            {
+                return (float)(
+                    (float)_sdk.GetData("LatAccel")
+                    * (Math.Cos((float)_sdk.GetData("Roll")) / G));
+            }
+        }
     }
 }
