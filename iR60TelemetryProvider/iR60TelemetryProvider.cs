@@ -22,7 +22,7 @@ namespace SimFeedback.telemetry.iR60
         public iR60TelemetryProvider() : base()
         {
             Author = "JamesClonk";
-            Version = "v1.0-rc.6";
+            Version = "v1.0-rc.7";
             BannerImage = @"img\banner_iracing.png"; // Image shown on top of the profiles tab
             IconImage = @"img\iracing.jpg";          // Icon used in the tree view for the profile
             TelemetryUpdateFrequency = 60;     // the update frequency in samples per second
@@ -111,13 +111,15 @@ namespace SimFeedback.telemetry.iR60
             {
                 try
                 {
+                    sdk.Startup();
+
                     // check if the SDK is connected
                     if (sdk.IsConnected())
                     {
                         IsConnected = true;
 
                         // check if car is on track and if we got new data
-                        if ((bool)sdk.GetData("IsOnTrack") && _lastSessionTick != (int)sdk.GetData("SessionTick"))
+                        if ((bool)sdk.GetData("IsOnTrack") &&_lastSessionTick != (int)sdk.GetData("SessionTick"))
                         {
                             IsRunning = true;
                             _lastSessionTick = (int)sdk.GetData("SessionTick");
@@ -132,11 +134,14 @@ namespace SimFeedback.telemetry.iR60
                             IsRunning = false;
                         }
                     }
-                    else
-                    {
-                        sdk.Startup();
+                    else if (sdk.IsInitialized) {
+                        sdk.Shutdown();
 
+                        IsConnected = false;
                         IsRunning = false;
+                        _lastSessionTick = -1;
+
+                        Thread.Sleep(1000);
                     }
                     Thread.Sleep(SamplePeriod);
                 }
@@ -149,10 +154,10 @@ namespace SimFeedback.telemetry.iR60
                 }
             }
 
-            sdk.Shutdown();
-
             IsConnected = false;
             IsRunning = false;
+
+            sdk.Shutdown();
         }
 
     }
