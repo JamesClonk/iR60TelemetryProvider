@@ -87,9 +87,21 @@ namespace SimFeedback.telemetry.iR60
             return tv;
         }
 
+        private float GetFloat(string name, float defaultValue = 0.0f)
+        {
+            if (_sdk.VarHeaders.ContainsKey(name))
+            {
+                return (float)_sdk.GetData(name);
+            }
+            else
+            {
+                return defaultValue;
+            }
+        }
+
         private float RadianToDegree(string name)
         {
-            return (float)_sdk.GetData(name) * (float)(180 / Math.PI);
+            return GetFloat(name) * (float)(180 / Math.PI);
         }
 
         private float SlipAngle
@@ -97,13 +109,13 @@ namespace SimFeedback.telemetry.iR60
             get
             {
                 float v = 0.0f;
-                float speed = (float)_sdk.GetData("Speed");
+                float speed = GetFloat("Speed");
 
                 if (speed > 5)
                 {
-                    float VelocityX = (float)_sdk.GetData("VelocityX");
-                    float VelocityY = (float)_sdk.GetData("VelocityY");
-                    float YawRate = (float)_sdk.GetData("YawRate");
+                    float VelocityX = GetFloat("VelocityX");
+                    float VelocityY = GetFloat("VelocityY");
+                    float YawRate = GetFloat("YawRate");
                     // Porsche GT3 Cup
                     // Fahrzeug Länge: 4.564
                     // Radstand: 1.980 x 2.456
@@ -119,20 +131,23 @@ namespace SimFeedback.telemetry.iR60
         {
             get
             {
-                float _LFshockDefl = (float)_sdk.GetData("LFshockDefl");
-                float _LRshockDefl = (float)_sdk.GetData("LRshockDefl");
-                float _RFshockDefl = (float)_sdk.GetData("RFshockDefl");
-                float _RRshockDefl = (float)_sdk.GetData("RRshockDefl");
+                float _CFshockDefl = GetFloat("CFshockDefl");
+                float _LFshockDefl = GetFloat("LFshockDefl");
+                float _LRshockDefl = GetFloat("LRshockDefl");
+                float _RFshockDefl = GetFloat("RFshockDefl");
+                float _RRshockDefl = GetFloat("RRshockDefl");
 
                 const float x = 1000.0f;
                 float[] data =
                     {
+                    _CFshockDefl - (float)_session.Get("CFshockDefl", 0.0f),
                     _LFshockDefl - (float)_session.Get("LFshockDefl", 0.0f),
                     _LRshockDefl - (float)_session.Get("LRshockDefl", 0.0f),
                     _RFshockDefl - (float)_session.Get("RFshockDefl", 0.0f),
                     _RRshockDefl - (float)_session.Get("RRshockDefl", 0.0f)
                 };
 
+                _session.Set("CFshockDefl", _CFshockDefl);
                 _session.Set("LFshockDefl", _LFshockDefl);
                 _session.Set("LRshockDefl", _LRshockDefl);
                 _session.Set("RFshockDefl", _RFshockDefl);
@@ -148,10 +163,10 @@ namespace SimFeedback.telemetry.iR60
             {
                 float[] data =
                     {
-                    (float)_sdk.GetData("TireLF_RumblePitch"),
-                    (float)_sdk.GetData("TireRF_RumblePitch"),
-                    (float)_sdk.GetData("TireLR_RumblePitch"),
-                    (float)_sdk.GetData("TireRR_RumblePitch")
+                    GetFloat("TireLF_RumblePitch"),
+                    GetFloat("TireRF_RumblePitch"),
+                    GetFloat("TireLR_RumblePitch"),
+                    GetFloat("TireRR_RumblePitch")
                 };
 
                 return data.Max();
@@ -162,10 +177,9 @@ namespace SimFeedback.telemetry.iR60
         {
             get
             {
-                return (float)(
-                    (float)_sdk.GetData("VertAccel") 
-                    * Math.Cos((float)_sdk.GetData("Pitch")) 
-                    * Math.Cos((float)_sdk.GetData("Roll")) - G) / G;
+                return (float)(GetFloat("VertAccel") 
+                    * Math.Cos(GetFloat("Pitch")) 
+                    * Math.Cos(GetFloat("Roll")) - G) / G;
             }
         }
 
@@ -173,9 +187,7 @@ namespace SimFeedback.telemetry.iR60
         {
             get
             {
-                return (float)(
-                    (float)_sdk.GetData("LongAccel")
-                    * (Math.Cos((float)_sdk.GetData("Pitch")) / G));
+                return (float)(GetFloat("LongAccel") * (Math.Cos(GetFloat("Pitch")) / G));
             }
         }
 
@@ -183,9 +195,7 @@ namespace SimFeedback.telemetry.iR60
         {
             get
             {
-                return (float)(
-                    (float)_sdk.GetData("LatAccel")
-                    * (Math.Cos((float)_sdk.GetData("Roll")) / G));
+                return (float)(GetFloat("LatAccel") * (Math.Cos(GetFloat("Roll")) / G));
             }
         }
     }
